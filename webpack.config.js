@@ -4,7 +4,7 @@ const baseConfig = {
   mode: 'production',
   devtool: false,
   entry: {
-    iost: path.resolve(__dirname, './index.js')
+    iost: path.resolve(__dirname, './index.ts')
   },
   resolve: {
     extensions: ['.js', '.ts'],
@@ -21,26 +21,6 @@ const serverConfig = {
   },
   module: {
     rules: [
-      {
-        test: /\.js$/,
-        use: [
-          {
-            loader: "babel-loader",
-            options: {
-              presets: [
-                ['@babel/env', {
-                  targets: {
-                    node: 6
-                  }
-                }]
-              ],
-              plugins: [
-                "@babel/plugin-transform-async-to-generator"
-              ],
-            }
-          },
-        ]
-      },
       {
         test: /\.ts$/,
         use: [
@@ -64,19 +44,6 @@ const clientConfig = {
   },
   module: {
     rules: [
-      {
-        test: /\.js$/,
-        use: [
-          {
-            loader: "babel-loader",
-            options: {
-              plugins: [
-                "@babel/plugin-transform-async-to-generator"
-              ],
-            }
-          },
-        ]
-      },
       {
         test: /\.ts$/,
         use: [
