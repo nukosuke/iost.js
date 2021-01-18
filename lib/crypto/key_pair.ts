@@ -1,12 +1,12 @@
-const Algorithm = require('./algorithm');
-const EC = require('elliptic').ec;
-const nacl = require('tweetnacl');
-const base58 = require('bs58');
+import Algorithm from './algorithm';
+import { ec as EC } from 'elliptic';
+import nacl from 'tweetnacl';
+import base58 from 'bs58';
 const crc32 = require('./crc32');
 
 const secp = new EC('secp256k1');
 
-function getID(buffer) {
+function getID(buffer: Buffer) {
     return base58.encode(buffer);
 }
 
@@ -16,13 +16,18 @@ function getID(buffer) {
  * @Param {Buffer}priKeyBytes - 私钥，可以通过bs58包解析base58字符串获得。
  * @Param {number}algType - 秘钥算法，1 = Secp256k1; 2 = Ed25519
  */
-class KeyPair {
-    constructor(priKeyBytes, algType = Algorithm.Ed25519) {
+export default class KeyPair {
+    public t: number
+    public pubkey: Buffer
+    public seckey: Buffer
+    public id: string
+
+    constructor(priKeyBytes: Buffer, algType = Algorithm.Ed25519) {
         this.t = algType;
         this.seckey = priKeyBytes;
 
         if (this.t === Algorithm.Ed25519) {
-            const kp = nacl.sign.keyPair.fromSeed(priKeyBytes.slice(0,32));
+            const kp = nacl.sign.keyPair.fromSeed(priKeyBytes.slice(0, 32));
             this.seckey = Buffer.from(kp.secretKey.buffer);
 
             this.pubkey = this.seckey.slice(this.seckey.length / 2);
@@ -31,7 +36,10 @@ class KeyPair {
             const secpKey = secp.keyFromPrivate(priKeyBytes);
             this.pubkey = Buffer.from(secpKey.getPublic(true, "hex"), "hex");
             this.seckey = priKeyBytes;
+        } else {
+            throw new Error(`KeyPair: invalid algorithm type val, ${algType}`);
         }
+
         this.id = getID(this.pubkey);
     }
 
@@ -47,7 +55,7 @@ class KeyPair {
         }
         if (algType === Algorithm.Secp256k1) {
             const secpKey = secp.genKeyPair();
-            const priKey =  Buffer.from(secpKey.getPrivate("hex"), "hex");
+            const priKey = Buffer.from(secpKey.getPrivate("hex"), "hex");
             return new KeyPair(priKey, algType);
         }
         throw ('invalid account type');
@@ -69,5 +77,3 @@ class KeyPair {
         return base58.encode(this.pubkey);
     }
 }
-
-module.exports = KeyPair;
