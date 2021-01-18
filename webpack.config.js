@@ -4,7 +4,10 @@ const baseConfig = {
   mode: 'production',
   devtool: false,
   entry: {
-    iost : path.resolve(__dirname, './index.js')
+    iost: path.resolve(__dirname, './index.js')
+  },
+  resolve: {
+    extensions: ['.js', '.ts'],
   },
 }
 const serverConfig = {
@@ -18,17 +21,17 @@ const serverConfig = {
   },
   module: {
     rules: [
-      { 
-        test: /\.js$/, 
+      {
+        test: /\.js$/,
         use: [
           {
             loader: "babel-loader",
             options: {
               presets: [
                 ['@babel/env', {
-                    targets: {
-                        node: 6
-                    }
+                  targets: {
+                    node: 6
+                  }
                 }]
               ],
               plugins: [
@@ -37,6 +40,14 @@ const serverConfig = {
             }
           },
         ]
+      },
+      {
+        test: /\.ts$/,
+        use: [
+          {
+            loader: 'ts-loader',
+          }
+        ],
       },
     ]
   },
@@ -53,8 +64,8 @@ const clientConfig = {
   },
   module: {
     rules: [
-      { 
-        test: /\.js$/, 
+      {
+        test: /\.js$/,
         use: [
           {
             loader: "babel-loader",
@@ -66,8 +77,16 @@ const clientConfig = {
           },
         ]
       },
+      {
+        test: /\.ts$/,
+        use: [
+          {
+            loader: 'ts-loader',
+          }
+        ],
+      },
     ]
   },
 }
 
-module.exports = [ serverConfig, clientConfig ]
+module.exports = [serverConfig, clientConfig]
