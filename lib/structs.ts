@@ -94,8 +94,7 @@ export class Tx {
     }
 
     setTime(expirationInSecound: number, delay: number, serverTimeDiff: number) {
-        let date = new Date();
-        this.time = date.getTime() * 1e6 + serverTimeDiff;
+        this.time = Date.now() * 1e6 + serverTimeDiff;
         this.expiration = this.time + expirationInSecound * 1e9;
         this.delay = delay;
     }
