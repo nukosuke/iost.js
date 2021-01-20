@@ -28,7 +28,7 @@ export class Tx {
     public amount_limit: TxAmountLimit[]
 
     public time?: number = undefined
-    public delay?: number = undefined
+    public delay?: number = 0
     public expiration?: number = undefined
 
     constructor(gasRatio: number, gasLimit: number) {
