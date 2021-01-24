@@ -6,6 +6,7 @@ const crc32 = require('./crc32');
 
 const secp = new EC('secp256k1');
 
+// TODO: should be static method of KeyPair
 function getID(buffer: Buffer) {
     return base58.encode(buffer);
 }
@@ -16,6 +17,8 @@ function getID(buffer: Buffer) {
  * @Param {Buffer}priKeyBytes - 私钥，可以通过bs58包解析base58字符串获得。
  * @Param {number}algType - 秘钥算法，1 = Secp256k1; 2 = Ed25519
  */
+// TODO: Use template to decide key algorithm like KeyPair<Algorithm.Ed25519>
+//       and implementation should be implemented in each algo class
 export default class KeyPair {
     public t: number
     public pubkey: Buffer
@@ -27,7 +30,9 @@ export default class KeyPair {
         this.seckey = priKeyBytes;
 
         if (this.t === Algorithm.Ed25519) {
-            const kp = nacl.sign.keyPair.fromSeed(priKeyBytes.slice(0, 32));
+            // NodeJS Buffer#slice is incompatible to TypedBuffer#slice
+            // https://nodejs.org/api/buffer.html#buffer_buffers_and_typedarrays
+            const kp = nacl.sign.keyPair.fromSeed(new Uint8Array(priKeyBytes.slice(0, 32)));
             this.seckey = Buffer.from(kp.secretKey.buffer);
 
             this.pubkey = this.seckey.slice(this.seckey.length / 2);

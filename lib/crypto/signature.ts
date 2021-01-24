@@ -12,17 +12,17 @@ export default class Signature {
     public pubkey?: Buffer
     public sig?: Buffer
 
-    constructor(info?: Uint8Array, keyPair?: KeyPair) {
+    constructor(info?: Buffer, keypair?: KeyPair) {
         if (!info) {
             this.algorithm = undefined
             this.pubkey = undefined
             this.sig = undefined
             return
         }
-        const pair = keyPair as KeyPair;
+        const pair = keypair as KeyPair;
         this.algorithm = pair.t;
         if (this.algorithm === Algo.Ed25519) {
-            this.sig = Buffer.from(nacl.sign(info, pair.seckey)).slice(0, 64);
+            this.sig = Buffer.from(nacl.sign(new Uint8Array(info), new Uint8Array(pair.seckey))).slice(0, 64);
             this.pubkey = pair.pubkey
         } else if (this.algorithm === Algo.Secp256k1) {
             const secpKey = secp.keyFromPrivate(pair.seckey);

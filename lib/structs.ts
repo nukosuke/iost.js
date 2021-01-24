@@ -27,9 +27,9 @@ export class Tx {
     public reserved: null
     public amount_limit: TxAmountLimit[]
 
-    public time?: number = undefined
-    public delay?: number = 0
-    public expiration?: number = undefined
+    private time: number = 0
+    private delay: number = 0
+    private expiration: number = 0
 
     constructor(gasRatio: number, gasLimit: number) {
         this.gasRatio = gasRatio;
@@ -114,7 +114,7 @@ export class Tx {
     _base_hash() {
         const hash = new SHA3(256);
         hash.update(this._bytes(0));
-        return hash.digest("binary");
+        return hash.digest('binary');
     }
 
     addSign(kp: KeyPair) {
@@ -125,7 +125,7 @@ export class Tx {
     _publish_hash() {
         const hash = new SHA3(256);
         hash.update(this._bytes(1));
-        return hash.digest("binary");
+        return hash.digest('binary');
     }
 
     addPublishSign(publisher: string, kp: KeyPair) {
@@ -140,36 +140,37 @@ export class Tx {
     }
 
     _bytes(n: number) {
-        let c = new Codec();
-        c.pushInt64(this.time as number);
-        c.pushInt64(this.expiration as number);
+        const c = new Codec();
+        c.pushInt64(this.time);
+        c.pushInt64(this.expiration);
         c.pushInt64(this.gasRatio * 100);
         c.pushInt64(this.gasLimit * 100);
-        c.pushInt64(this.delay as number);
+        c.pushInt64(this.delay);
         c.pushInt(this.chain_id);
+
         if (!this.reserved) {
             c.pushInt(0)
         }
 
         c.pushInt(this.signers.length);
-        for (let i = 0; i < this.signers.length; i++) {
-            c.pushString(this.signers[i])
-        }
+        this.signers.forEach(signer => c.pushString(signer));
+
         c.pushInt(this.actions.length);
-        for (let i = 0; i < this.actions.length; i++) {
-            let c2 = new Codec();
-            c2.pushString(this.actions[i].contract);
-            c2.pushString(this.actions[i].actionName);
-            c2.pushString(this.actions[i].data);
+        this.actions.forEach(action => {
+            const c2 = new Codec();
+            c2.pushString(action.contract);
+            c2.pushString(action.actionName);
+            c2.pushString(action.data);
             c.pushBytes(c2._buf)
-        }
+        });
+
         c.pushInt(this.amount_limit.length);
-        for (let i = 0; i < this.amount_limit.length; i++) {
-            let c2 = new Codec();
-            c2.pushString(this.amount_limit[i].token);
-            c2.pushString(this.amount_limit[i].value + "");
+        this.amount_limit.forEach(limit => {
+            const c2 = new Codec();
+            c2.pushString(limit.token);
+            c2.pushString(limit.value);
             c.pushBytes(c2._buf)
-        }
+        });
 
         if (n > 0) {
             c.pushInt(this.signatures.length);

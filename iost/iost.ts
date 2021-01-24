@@ -28,15 +28,14 @@ const defaultConfig: IOSTConfig = {
  * @param {HTTPProvider} - provider
  */
 export default class IOST {
-    public rpc?: RPC
-    public account?: Account
-    public serverTimeDiff = 0
-    public config: IOSTConfig
-
+    private rpc?: RPC
+    private account?: Account
+    private serverTimeDiff = 0
+    private config: IOSTConfig
     private currentRPC?: RPC
     private currentAccount?: Account
 
-    constructor(config: IOSTConfig) {
+    constructor(config?: IOSTConfig) {
         this.config = defaultConfig;
         if (!config) {
             return
