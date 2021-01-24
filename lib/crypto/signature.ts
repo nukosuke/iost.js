@@ -20,7 +20,7 @@ export default class Signature {
             return
         }
         const pair = keypair as KeyPair;
-        this.algorithm = pair.t;
+        this.algorithm = pair.type;
         if (this.algorithm === Algo.Ed25519) {
             this.sig = Buffer.from(nacl.sign(new Uint8Array(info), new Uint8Array(pair.seckey))).slice(0, 64);
             this.pubkey = pair.pubkey
