@@ -1,7 +1,7 @@
 {
-  "name": "iost",
-  "version": "0.1.22",
-  "description": "iost JavaScript SDK",
+  "name": "@nukosuke/iost",
+  "version": "0.0.0",
+  "description": "iost JavaScript/TypeScript SDK",
   "main": "dist/iost.node.js",
   "author": "IOST.IO",
   "scripts": {
